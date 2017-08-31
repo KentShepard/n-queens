@@ -16,39 +16,43 @@
 
 
 window.findNRooksSolution = function(n) {
-  var board = new Board({n: n}); //fixme
-  var numPiece = 0;
-  var solution = undefined;
+  var solution = new Board({n: n}); //fixme
+  //var solution = board;
+  var numPieces = 0;
+  // var solution = board;
 
-
-  var playBoard = function(n, rowIndex, colIndex) {
-    for (var i = 0; i < n - 1; i++) {
-      board.togglePiece(rowIndex, i);
-      console.log(board);
-      if (hasAnyRooksConflicts() === false) {
-        if (rowIndex++ < n - 1) {
-          playBoard(n, rowIndex++);
-        } else {
-          console(board);
-        }
-      } else {
+  var playBoard = function(board, rowIndex, colIndex) {
+    colIndex = colIndex || 0;
+    if (numPieces === n) {
+      return board;
+    } else {
+      for (var i = colIndex; i < n; i++) {
         board.togglePiece(rowIndex, i);
+        numPieces++;
+        if (board.hasAnyRooksConflicts() === false) {
+          continue;
+        } else {
+          board.togglePiece(rowIndex, i);
+          numPieces--;
+        }
+      }
+      if (numPieces < n) {
+        rowIndex++;
+        playBoard(board, rowIndex, colIndex);
+      } else {
+        return board;
       }
     }
-
-    //for loop - through each row
-      //toggle first pieces
-      //check for conflicts
-      //increase row index
-      //check if row index <= n - 1
-        //run playboard with incremented row index
-        //recursively run until row index is too large
-
   };
-
-  playBoard(n, 0, 0);
+  var results = [];
+  playBoard(solution, 0, 0);
+  for (var key in solution.attributes) {
+    if (key !== 'n') {
+      results.push(solution.attributes[key])
+    }
+  }
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
-  return solution;
+  return results;
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other
