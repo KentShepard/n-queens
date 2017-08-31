@@ -59,25 +59,33 @@ window.findNRooksSolution = function(n, rowIndex, colIndex) {
 window.countNRooksSolutions = function(n) {
   var solutionCount = 0; //fixme
   var board = new Board({n: n});
+  var currentPieces = [];
 
-  var playBoard = function(rowIndex) {
+  var playBoard = function(rowIndex, currentPieces) {
     for (var i = 0; i < n; i++) {
+      if (currentPieces.length > 0) {
+        if (currentPieces[rowIndex - 1][0] === rowIndex || currentPieces[rowIndex - 1][1] === i) {
+          continue;
+        }
+      }
       board.togglePiece(rowIndex, i);
-
+      currentPieces.push([rowIndex, i]);
       if (board.hasAnyRooksConflicts()) {
         board.togglePiece(rowIndex, i);
+        currentPieces.pop()
       } else {
         if (rowIndex + 1 < n) {
-          playBoard(rowIndex + 1, 0);
+          playBoard(rowIndex + 1, currentPieces);
           board.togglePiece(rowIndex, i);
         } else if (rowIndex === n - 1) {
           solutionCount++;
           board.togglePiece(rowIndex, i);
+          currentPieces.pop();
         }
       }
     }
   };
-  playBoard(0);
+  playBoard(0, currentPieces);
 
   console.log('Number of solutions for ' + n + ' rooks:', solutionCount);
   return solutionCount;
