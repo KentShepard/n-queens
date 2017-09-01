@@ -13,12 +13,11 @@
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n rooks placed such that none of them can attack each other
 
-
-
-window.findNRooksSolution = function(n, rowIndex, colIndex) {
+window.findNRooksSolution = function(n) {
   var board = new Board({n: n}); //fixme
   var solution = [];
   var numPieces = 0;
+  var rowIndex, colIndex;
 
   var playBoard = function(board, rowIndex, colIndex) {
     rowIndex = rowIndex || 0;
@@ -80,8 +79,37 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+  var solution = []; //fixme
+  var board = new Board({n: n});
+  var numPieces = 0;
 
+  var playBoard = function(row, n, board) {
+    if (row === n) {
+      return board;
+    }
+    for (var i = 0; i < n; i++) {
+      board.togglePiece(row, i);
+      if (!board.hasAnyQueensConflicts()) {
+        var result = playBoard(row + 1, n, board);
+        if (result) {
+          return result;
+        }
+      }
+      board.togglePiece(row, i);
+    }
+  // if all rows exhausted
+  // iterate over possible decisions
+    // place a piece
+    // recurse into remaining problem
+    // exit once solution is found
+    // unplace a piece
+  };
+  playBoard(0, n, board);
+  for (var key in board.attributes) {
+    if (key !== 'n') {
+      solution.push(board.attributes[key]);
+    }
+  }
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
@@ -89,7 +117,7 @@ window.findNQueensSolution = function(n) {
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
   var solutionCount = 0; //fixme
-  var board = new Board({n:n});
+  var board = new Board({n: n});
 
   var playBoard = function(rowIndex) {
     if (rowIndex === n) {
